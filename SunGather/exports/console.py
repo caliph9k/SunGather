@@ -18,6 +18,8 @@ class export_console(object):
         return True
 
     def publish(self, inverter):
+        print("+----------------------------------------------------------------------+")
+        print("| {:<45} | {:<20} |".format(inverter.inverter_config['serial_number'],inverter.inverter_config['model']))
         print("+----------------------------------------------------------------------+") 
         print("| {:<7} | {:<35} | {:<20} |".format('Address', 'Register','Value'))
         print("+---------+-------------------------------------+----------------------+") 
