@@ -215,10 +215,10 @@ logging.basicConfig(
     level=logging.DEBUG,
     datefmt='%Y-%m-%d %H:%M:%S')
 
-#logger = logging.getLogger('')
-#ch = logging.StreamHandler()
-#ch.setLevel(logging.DEBUG)
-#logger.addHandler(ch)
+logger = logging.getLogger('')
+ch = logging.StreamHandler()
+ch.setLevel(logging.DEBUG)
+logger.addHandler(ch)
 
 if __name__== "__main__":
     main()
