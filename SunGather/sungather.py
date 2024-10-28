@@ -143,7 +143,9 @@ def main():
         sys.exit(f"Error: Connection to inverter failed: {config_inverter.get('host')}:{config_inverter.get('port')}")       
       
       invContainer['inverter'].configure_registers(copy.deepcopy(registersfile))
-      if not invContainer['inverter'].inverter_config['connection'] == "http": inverter.close()
+      if not invContainer['inverter'].inverter_config['connection'] == "http" and not invContainer['inverter'].inverter_config['connection'] == "https": 
+          logging.debug("Calling inverter.close()")
+          inverter.close()
       
       # Now we know the inverter is working, lets load the exports
       exports = []
@@ -152,7 +154,7 @@ def main():
               try:
                   if export.get('enabled', False):
                       export_load = importlib.import_module("exports." + export.get('name'))
-                      logging.info(f"Loading Export: exports\{export.get('name')}")
+                      logging.info(f"Loading Export: exports {export.get('name')}")
                       exports.append(getattr(export_load, "export_" + export.get('name'))())
                       retval = exports[-1].configure(export, invContainer['inverter'])
               except Exception as err:
@@ -186,7 +188,7 @@ def main():
             logging.debug(f"Processing {lenExports} exports....") 
             for export in exports:
                 export.publish(inverter)
-            if not inverter.inverter_config['connection'] == "http": inverter.close()
+            if not inverter.inverter_config['connection'] == "http" and not inverter.inverter_config['connection'] == "https": inverter.close()
           else:
             inverter.disconnect()
             logging.warning(f"Data collection failed, skipped exporting data. Retying in {scan_interval} secs")
