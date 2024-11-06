@@ -185,7 +185,7 @@ def main():
         if(success):
             for export in exports:
                 export.publish(inverter)
-            if not inverter.inverter_config['connection'] == "http"i and not inverter.inverter_config['connection'] == "https": inverter.close()
+            if not inverter.inverter_config['connection'] == "http" and not inverter.inverter_config['connection'] == "https": inverter.close()
         else:
             inverter.disconnect()
             logging.warning(f"Data collection failed, skipped exporting data. Retying in {scan_interval} secs")
