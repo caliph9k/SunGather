@@ -92,7 +92,7 @@ def main():
     for inverter in configfile['inverter']:
       invContainer = {}
       logging.debug(f" - inverter: {inverter}")
-      if not inverter.get('unabled',True):
+      if not inverter.get('enabled',True):
         continue # Do not process a disabled inverter
       config_inverter = {
         "name": inverter.get('name',None),
