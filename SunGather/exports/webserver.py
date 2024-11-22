@@ -8,7 +8,7 @@ import logging
 import urllib
 
 logger = logging.getLogger(__name__)
-#logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.DEBUG)
 
 class export_webserver(object):
     html_body = "Pending Data Retrieval"
@@ -30,35 +30,53 @@ class export_webserver(object):
         except OSError as exc:
             if exc.args[0] != 98:
               raise
+            print("[1]")
             logger.info("  address already in use...")
             url = "http://localhost:"+str(config.get('port',8080))
             req = urllib.request.Request(url+"/ping")
             resp = urllib.request.urlopen(req)
             if (resp.status == 200):
-              logger.info("  received a ping!")
+              print("[2]")
+              logger.info("  existing webserver detected!")
               self.req = {}
               url = url + "/publish"
               self.req['url'] = url
               self.req['inverter'] = inverter
+              print("[3]")
               fullConfig={'config':inverter.client_config}
-              for key,value in inverter.inverter_config:
-                fullConfig['config'][key] = value
+              print("[3a]")
+              if inverter.inverter_config != None:
+                for key,value in inverter.inverter_config:
+                  print("[3b]")
+                  fullConfig['config'][key] = value
+              print("[3c]")
               data = json.dumps(fullConfig).encode('utf-8')
-              #logger.debug(f"  sending {data}")
+              print("[4]")
+              logger.info(f"  sending {data} to webserver")
               req = urllib.request.Request(url, method='POST')
               req.add_header('Content-Type','application/json')
+              logger.info("  transmitting data to existing webserver")
+              print("[5]")
               resp = urllib.request.urlopen(req, data)
               if (resp.status == 200):
                 # successful initialisation with the running server
+                print("[6]")
+                logger.info("  successful sync to existing server established")
                 return True
+              print("[7]")
               logger.info("  failed to sync with the server")
               return False
             else:
+              print("[8]")
               logger.info("  no ping response, cannot be reused!")
               return False
         except Exception as err:
+            print("[9]")
             logger.error(f"Webserver: Error: {err}")
             return False
+
+        print("[10]")
+        # Should only get here is need to instantiate the webserver
         pending_config = False
         config_body = f"""
             <h3>SunGather v{__version__}</h3></p>

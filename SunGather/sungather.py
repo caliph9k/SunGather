@@ -147,14 +147,15 @@ def main():
     
       # Now we know the inverter is working, lets load the exports
       exports = []
-      if configfile.get('exports'):
-        for export in configfile.get('exports'):
+
+      if 'exports' in inverter:
+        for export in inverter["exports"]:
             try:
                 if export.get('enabled', False):
                     export_load = importlib.import_module("exports." + export.get('name'))
                     logging.info(f"Loading Export: exports {export.get('name')}")
                     exports.append(getattr(export_load, "export_" + export.get('name'))())
-                    retval = exports[-1].configure(export, inverter)
+                    retval = exports[-1].configure(export, invContainer['inverter'])
             except Exception as err:
                 logging.error(f"Failed loading export: {err}" +
                             f"\n\t\t\t     Please make sure {export.get('name')}.py exists in the exports folder")
@@ -165,6 +166,9 @@ def main():
       signal.signal(signal.SIGTERM, handle_sigterm)
 
     # Core polling loop
+    logging.info(f"===================")
+    logging.info(f" Main Polling Loop ")
+    logging.info(f"-------------------")
     while True:
       loop_start = time.perf_counter()
 
@@ -183,6 +187,9 @@ def main():
             success = False
 
         if(success):
+            exports = inv['exports']
+            lenExports = len(exports)
+            logging.info(f"Processing {lenExports} exports.")
             for export in exports:
                 export.publish(inverter)
             if not inverter.inverter_config['connection'] == "http" and not inverter.inverter_config['connection'] == "https": inverter.close()
